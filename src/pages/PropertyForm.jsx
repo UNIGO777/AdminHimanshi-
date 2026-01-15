@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, X } from 'lucide-react';
-import Sidebar from '../components/Sidebar.jsx';
-import { clearAdminToken } from '../services/token';
+import AdminLayout from '../components/AdminLayout.jsx';
 import { createProperty, getProperty, updateProperty, uploadImages, uploadVideo } from '../services/properties';
 
 const PROPERTY_TYPES = [
@@ -131,16 +130,8 @@ export default function PropertyForm({ onLogout }) {
   ]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="flex">
-        <Sidebar
-          onLogout={() => {
-            clearAdminToken();
-            onLogout?.();
-          }}
-        />
-
-        <main className="flex-1 px-6 py-6">
+    <AdminLayout onLogout={onLogout}>
+      <div className="flex flex-col gap-6">
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-3">
@@ -182,10 +173,10 @@ export default function PropertyForm({ onLogout }) {
           </div>
 
           {error ? (
-            <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
           ) : null}
 
-          <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
             <div className="rounded-xl border border-slate-200 bg-white p-4 xl:col-span-2">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field label="Title">
@@ -464,9 +455,8 @@ export default function PropertyForm({ onLogout }) {
               )}
             </div>
           </div>
-        </main>
       </div>
-    </div>
+    </AdminLayout>
   );
 }
 

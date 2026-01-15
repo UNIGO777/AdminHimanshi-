@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard.jsx'
 import Properties from './pages/Properties.jsx'
 import PropertyForm from './pages/PropertyForm.jsx'
 import Queries from './pages/Queries.jsx'
+import Ratings from './pages/Ratings.jsx'
+import Users from './pages/Users.jsx'
 import { clearAdminToken, getAdminToken } from './services/token'
 
 function App() {
@@ -117,6 +119,38 @@ function AppRoutes({ isAuthed, onLoggedIn, onLogout }) {
         element={
           isAuthed ? (
             <Queries
+              onLogout={() => {
+                onLogout()
+                navigate('/login', { replace: true })
+              }}
+            />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      <Route
+        path="/ratings"
+        element={
+          isAuthed ? (
+            <Ratings
+              onLogout={() => {
+                onLogout()
+                navigate('/login', { replace: true })
+              }}
+            />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      <Route
+        path="/users"
+        element={
+          isAuthed ? (
+            <Users
               onLogout={() => {
                 onLogout()
                 navigate('/login', { replace: true })

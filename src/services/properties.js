@@ -93,3 +93,27 @@ export async function searchQueries(params = {}) {
   const qs = search.toString();
   return apiRequest(`/api/queries/search${qs ? `?${qs}` : ''}`);
 }
+
+export async function searchRatings(params = {}) {
+  const search = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) {
+    if (v === undefined || v === null || String(v).trim() === '') continue;
+    search.set(k, String(v));
+  }
+  const qs = search.toString();
+  return apiRequest(`/api/ratings/search${qs ? `?${qs}` : ''}`);
+}
+
+export async function searchUsers(params = {}) {
+  const search = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) {
+    if (v === undefined || v === null || String(v).trim() === '') continue;
+    search.set(k, String(v));
+  }
+  const qs = search.toString();
+  return apiRequest(`/api/users/search${qs ? `?${qs}` : ''}`);
+}
+
+export async function setUserBlocked(id, isBlocked) {
+  return apiRequest(`/api/users/${encodeURIComponent(id)}/block`, { method: 'PATCH', body: { isBlocked } });
+}
