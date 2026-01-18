@@ -62,6 +62,14 @@ export async function deleteProperty(id) {
   return apiRequest(`/api/properties/${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
+export async function listFeaturedProperties() {
+  return apiRequest('/api/properties/featured');
+}
+
+export async function setPropertyFeatured(id, isFeatured) {
+  return apiRequest(`/api/properties/${encodeURIComponent(id)}/featured`, { method: 'PATCH', body: { isFeatured } });
+}
+
 export async function uploadImage(file) {
   const form = new FormData();
   form.append('file', file);

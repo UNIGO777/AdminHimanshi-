@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import AdminLogin from './pages/AdminLogin.jsx'
 import Dashboard from './pages/Dashboard.jsx'
+import Featured from './pages/Featured.jsx'
 import Properties from './pages/Properties.jsx'
 import PropertyForm from './pages/PropertyForm.jsx'
 import Queries from './pages/Queries.jsx'
@@ -135,6 +136,22 @@ function AppRoutes({ isAuthed, onLoggedIn, onLogout }) {
         element={
           isAuthed ? (
             <Ratings
+              onLogout={() => {
+                onLogout()
+                navigate('/login', { replace: true })
+              }}
+            />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      <Route
+        path="/featured"
+        element={
+          isAuthed ? (
+            <Featured
               onLogout={() => {
                 onLogout()
                 navigate('/login', { replace: true })

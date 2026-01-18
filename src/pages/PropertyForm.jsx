@@ -24,6 +24,21 @@ const PROPERTY_TYPES = [
 const LISTING_TYPES = ['Sale', 'Rent', 'Lease'];
 const STATUSES = ['Available', 'Booked', 'Sold', 'Under Construction'];
 
+const AMENITIES = [
+  'Parking',
+  'Lift',
+  'Power Backup',
+  'Security',
+  'CCTV',
+  'Gym',
+  'Swimming Pool',
+  'Garden',
+  'Club House',
+  'Play Area',
+  'Water Supply',
+  'Internet',
+];
+
 export default function PropertyForm({ onLogout }) {
   const { id } = useParams();
   const isEdit = Boolean(id);
@@ -42,6 +57,7 @@ export default function PropertyForm({ onLogout }) {
   const [area, setArea] = useState('');
   const [bedrooms, setBedrooms] = useState('');
   const [bathrooms, setBathrooms] = useState('');
+  const [amenities, setAmenities] = useState([]);
   const [ownerName, setOwnerName] = useState('');
   const [ownerContact, setOwnerContact] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
@@ -49,10 +65,24 @@ export default function PropertyForm({ onLogout }) {
   const [verified, setVerified] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
 
+  const showsRoomFields = propertyType !== 'Plot' && propertyType !== 'Land';
+  const showsAmenities = propertyType !== 'Plot' && propertyType !== 'Land';
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
+
+  useEffect(() => {
+    if (showsRoomFields) return;
+    setBedrooms('');
+    setBathrooms('');
+  }, [showsRoomFields]);
+
+  useEffect(() => {
+    if (showsAmenities) return;
+    setAmenities([]);
+  }, [showsAmenities]);
 
   useEffect(() => {
     if (!isEdit) return;
@@ -73,6 +103,7 @@ export default function PropertyForm({ onLogout }) {
         setArea(p?.area !== undefined && p?.area !== null ? String(p.area) : '');
         setBedrooms(p?.bedrooms !== undefined && p?.bedrooms !== null ? String(p.bedrooms) : '');
         setBathrooms(p?.bathrooms !== undefined && p?.bathrooms !== null ? String(p.bathrooms) : '');
+        setAmenities(Array.isArray(p?.amenities) ? p.amenities.filter(Boolean) : []);
         setOwnerName(p?.ownerName || '');
         setOwnerContact(p?.ownerContact || '');
         setVideoUrl(p?.videoUrl || '');
@@ -97,8 +128,9 @@ export default function PropertyForm({ onLogout }) {
       address: address.trim() || undefined,
       pincode: pincode.trim() || undefined,
       area: area.trim() ? Number(area) : undefined,
-      bedrooms: bedrooms.trim() ? Number(bedrooms) : undefined,
-      bathrooms: bathrooms.trim() ? Number(bathrooms) : undefined,
+      bedrooms: showsRoomFields && bedrooms.trim() ? Number(bedrooms) : undefined,
+      bathrooms: showsRoomFields && bathrooms.trim() ? Number(bathrooms) : undefined,
+      amenities: showsAmenities ? (Array.isArray(amenities) ? amenities.filter(Boolean) : []) : [],
       ownerName: ownerName.trim() || undefined,
       ownerContact: ownerContact.trim() || undefined,
       videoUrl: videoUrl.trim() || undefined,
@@ -121,12 +153,15 @@ export default function PropertyForm({ onLogout }) {
     area,
     bedrooms,
     bathrooms,
+    amenities,
     ownerName,
     ownerContact,
     videoUrl,
     images,
     verified,
     isFeatured,
+    showsRoomFields,
+    showsAmenities,
   ]);
 
   return (
@@ -295,23 +330,64 @@ export default function PropertyForm({ onLogout }) {
                   />
                 </Field>
 
-                <Field label="Bedrooms">
-                  <input
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
-                    value={bedrooms}
-                    onChange={(e) => setBedrooms(e.target.value)}
-                    inputMode="numeric"
-                  />
-                </Field>
+                {showsRoomFields ? (
+                  <>
+                    <Field label="Bedrooms">
+                      <input
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
+                        value={bedrooms}
+                        onChange={(e) => setBedrooms(e.target.value)}
+                        inputMode="numeric"
+                      />
+                    </Field>
 
-                <Field label="Bathrooms">
-                  <input
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
-                    value={bathrooms}
-                    onChange={(e) => setBathrooms(e.target.value)}
-                    inputMode="numeric"
-                  />
-                </Field>
+                    <Field label="Bathrooms">
+                      <input
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
+                        value={bathrooms}
+                        onChange={(e) => setBathrooms(e.target.value)}
+                        inputMode="numeric"
+                      />
+                    </Field>
+                  </>
+                ) : null}
+
+                {showsAmenities ? (
+                  <Field label="Amenities" className="md:col-span-2">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {AMENITIES.map((a) => {
+                        const checked = Array.isArray(amenities) ? amenities.includes(a) : false;
+                        return (
+                          <label key={a} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                            <input
+                              type="checkbox"
+                              className="h-4 w-4 rounded border-slate-300"
+                              checked={checked}
+                              onChange={(e) => {
+                                const nextChecked = e.target.checked;
+                                setAmenities((prev) => {
+                                  const current = Array.isArray(prev) ? prev : [];
+                                  if (nextChecked) return Array.from(new Set([...current, a]));
+                                  return current.filter((x) => x !== a);
+                                });
+                              }}
+                            />
+                            <span className="font-semibold">{a}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    {Array.isArray(amenities) && amenities.length ? (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {amenities.map((a) => (
+                          <span key={a} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                            {a}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
+                  </Field>
+                ) : null}
 
                 <Field label="Owner Name">
                   <input

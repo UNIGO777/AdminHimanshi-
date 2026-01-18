@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Home, LayoutDashboard, LogOut, MessageSquare, Star, Users } from 'lucide-react';
+import { BadgeCheck, Home, LayoutDashboard, LogOut, MessageSquare, Star, Users } from 'lucide-react';
 
 export default function Sidebar({ onLogout, onNavigate, showHeader = true, className = '' }) {
   const linkClass = ({ isActive }) =>
@@ -33,6 +33,10 @@ export default function Sidebar({ onLogout, onNavigate, showHeader = true, class
         <NavLink to="/ratings" className={linkClass} onClick={() => onNavigate?.()}>
           <Star className="h-4 w-4" />
           <span>Ratings</span>
+        </NavLink>
+        <NavLink to="/featured" className={linkClass} onClick={() => onNavigate?.()}>
+          <BadgeCheck className="h-4 w-4" />
+          <span>Featured</span>
         </NavLink>
         <NavLink to="/users" className={linkClass} onClick={() => onNavigate?.()}>
           <Users className="h-4 w-4" />
